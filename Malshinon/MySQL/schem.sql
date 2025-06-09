@@ -1,4 +1,4 @@
-CREATE DATABASE malshinon;
+CREATE DATABASE malshinon CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE People
 (
