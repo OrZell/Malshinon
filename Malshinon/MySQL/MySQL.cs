@@ -7,12 +7,12 @@ using MySql.Data.MySqlClient;
 
 namespace Malshinon.MySQL
 {
-    public class MySQL
+    public class MySQLServer
     {
         private string SqlString = "Server=localhost;Database=malshinon;User=root;Password=''";
         public MySqlConnection? connection = null;
 
-        public MySQL()
+        public MySQLServer()
         {
 
         }

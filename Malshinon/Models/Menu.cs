@@ -2,19 +2,15 @@
 {
     public class Menu
     {
-        public static string[] EnterName()
+        public static string EnterName()
         {
-            string[] fullName = new string[2];
-
-            Console.WriteLine("Please enter your full name (two words)");
-            string[] userPrompt = Console.ReadLine()!.Split();
-            if (userPrompt.Length != 2)
+            Console.WriteLine("Please enter your code name");
+            string userPrompt = Console.ReadLine()!;
+            if (userPrompt.Contains(" "))
             {
-                throw new Exception("Invalid Name");
+                throw new Exception("Invalid Code Name");
             }
-            fullName[0] = userPrompt[0];
-            fullName[1] = userPrompt[1];
-            return fullName;
+            return userPrompt;
         }
     }
 }
