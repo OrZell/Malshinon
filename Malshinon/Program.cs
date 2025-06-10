@@ -1,4 +1,5 @@
 ﻿using Malshinon.Models;
+using Malshinon.MySQL;
 
 namespace Malshinon
 {
@@ -6,7 +7,9 @@ namespace Malshinon
     {
         static void Main(string[] args)
         {
-
+            MySQLServer sql = new MySQLServer();
+            Menu menu = new Menu(sql);
+            menu.MainMenu();
         }
     }
 }

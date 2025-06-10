@@ -2,19 +2,21 @@
 {
     public class ProcessText
     {
-        public static List<string> ProcessTextFromReporter(string Text)
+        public static string ProcessTextFromReporter(string Text)
         {
-            List<string> finalResult = new List<string>();
+            string finalResult = null!;
             List<string> TextInWords = Text.Split().ToList();
 
-            for (int i = 0; i < TextInWords.Count-1; i++)
+            for (int i = 0; i < TextInWords.Count; i++)
             {
-                if (TextInWords[i] == TextInWords[i].ToUpper() && TextInWords[i+1] == TextInWords[i+1].ToUpper())
+                if (TextInWords[i].Length > 14 && TextInWords[i] == TextInWords[i].ToUpper())
                 {
-                    finalResult.Add(TextInWords[i]);
-                    finalResult.Add(TextInWords[i+1]);
-                    finalResult.Add(Text);
+                    finalResult = TextInWords[i];
                 }
+            }
+            if (finalResult == null)
+            {
+                throw new Exception("No SecretCode Detected");
             }
             return finalResult;
         }
