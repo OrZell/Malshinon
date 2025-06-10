@@ -74,9 +74,14 @@
             }
         }
 
-        public Person(string firstName, string lastName, )
+        public Person(string firstName, string lastName, string secretCode, int type = 1, int numReports = 0, int numMentions = 0)
         {
-
+            this._FirstName = firstName;
+            this._LastName = lastName;
+            this._SecretCode = secretCode;
+            this._Type = type;
+            this._NumReports = numReports;
+            this._NumMentions = numMentions;
         }
     }
 }
