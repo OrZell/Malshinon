@@ -47,58 +47,84 @@ namespace Malshinon.Models
 
         public void flow()
         {
-            string reporterSecretCode = UserInputs.EnterSecretCode();
-            if (!this.Pda.SearchByCodeName(reporterSecretCode))
-            {
-                string[] fullName = UserInputs.EnterYourFullname().Split();
-                Person person = new Person(fullName[0], fullName[1], reporterSecretCode);
-                this.Pda.AddPerson(person);
-            }
+            string reporterSecretCode = UserInputs.EnterYourSecretCode();
+            CheckIfSecretCodeExist(reporterSecretCode);
+
+            string targetSecretCode = UserInputs.EnterTargetSecretCode();
 
             string Text = UserInputs.EnterYourReport();
-            string targetSecretCode = ProcessText.ProcessTextFromReporter(Text);
-            if (!this.Pda.SearchByCodeName(targetSecretCode))
-            {
-                string[] targetFullName = UserInputs.EnterTargetFullname().Split();
-                Person person = new Person(targetFullName[0], targetFullName[1], targetSecretCode, 2);
-                this.Pda.AddPerson(person);
-            }
 
-            int reporterID = this.Pda.FindIdBySecretCode(reporterSecretCode);
-            int targetID = this.Pda.FindIdBySecretCode(targetSecretCode);
+            CheckIfSecretCodeExist(targetSecretCode, 2, false);
 
-            Report report = new Report(reporterID, targetID, Text);
-            this.Rda.AddReport(report);
-            this.Pda.IncreaseReportsBySecretCode(reporterSecretCode);
-            this.Pda.IncreaseMentionsBySecretCode(targetSecretCode);
+            AddReportAndIncrease(reporterSecretCode, targetSecretCode, Text);
 
-            if (this.Pda.ChaeckAndReturnTheType(reporterSecretCode) < 3 && 
-                this.Pda.GetNumOfReportsBySecretCode(reporterSecretCode) > 0 &&
-                this.Pda.GetNumOfMentionsBySecretCode(reporterSecretCode) > 0)
-            {
-                this.Pda.ConvertToBoth(reporterSecretCode);
-            }
+            CheckIfToChangeTheStatusToBoth(reporterSecretCode);
+            CheckIfToChangeTheStatusToBoth(targetSecretCode);
 
-            if (this.Pda.ChaeckAndReturnTheType(targetSecretCode) < 3 &&
-                this.Pda.GetNumOfReportsBySecretCode(targetSecretCode) > 0 &&
-                this.Pda.GetNumOfMentionsBySecretCode(targetSecretCode) > 0)
-            {
-                this.Pda.ConvertToBoth(targetSecretCode);
-            }
+            CheckIfToChangeTheStatusToPotentialAgent(reporterSecretCode);
+            CheckIfToLogAboutPotentialThreadAlert(targetSecretCode);
 
-            if (this.Pda.GetNumOfReportsBySecretCode(reporterSecretCode) >= 10 &&
-                this.Pda.GetAllChartersBySecretCode(reporterSecretCode)/this.Pda.GetNumOfReportsBySecretCode(reporterSecretCode) >= 100)
-            {
-                this.Pda.ConvertToPotentialAgent(reporterSecretCode);
-            }
 
-            if (this.Pda.GetNumOfMentionsBySecretCode(targetSecretCode) >= 20 &&
-                this.Pda.ChaeckAndReturnTheType(targetSecretCode) > 4)
-            {
-                this.Pda.ConvertToPotentialAgent(targetSecretCode);
-            }
 
             Console.WriteLine("Proccessed");
+        }
+
+        public void CheckIfSecretCodeExist(string secretCode, int type = 1, bool sign = true)
+        {
+            string[] fullName = new string[2];
+            if (!this.Pda.SearchByCodeName(secretCode))
+            {
+                if (sign)
+                {
+                    fullName = UserInputs.EnterYourFullname().Split();
+                }
+                else
+                {
+                    fullName = UserInputs.EnterTargetFullname().Split();
+                }
+                Person person = new Person(fullName[0], fullName[1], secretCode, type);
+                this.Pda.AddPerson(person);
+                Logger.CreateLog($"New Person Created {secretCode}");
+            }
+        }
+
+        public void AddReportAndIncrease(string reporterSecretCode, string targetSecretCode, string Text)
+        {
+            int reporterID = this.Pda.FindIdBySecretCode(reporterSecretCode);
+            int targetID = this.Pda.FindIdBySecretCode(targetSecretCode);
+            Report report = new Report(reporterID, targetID, Text);
+            this.Rda.AddReport(report);
+            Logger.CreateLog("New Report Created");
+            this.Pda.IncreaseReportsBySecretCode(reporterSecretCode);
+            this.Pda.IncreaseMentionsBySecretCode(targetSecretCode);
+        }
+
+        public void CheckIfToChangeTheStatusToBoth(string secretCode)
+        {
+            if (this.Pda.ChaeckAndReturnTheType(secretCode) < 3 &&
+                this.Pda.GetNumOfReportsBySecretCode(secretCode) > 0 &&
+                this.Pda.GetNumOfMentionsBySecretCode(secretCode) > 0)
+            {
+                this.Pda.ConvertToBoth(secretCode);
+            }
+        }
+        public void CheckIfToChangeTheStatusToPotentialAgent(string secretCode)
+        {
+            int RepsNum = this.Pda.GetNumOfReportsBySecretCode(secretCode);
+            int AllCharters = this.Pda.GetAllChartersBySecretCode(secretCode);
+            if (RepsNum >= 10 && AllCharters/RepsNum >= 100)
+            {
+                this.Pda.ConvertToPotentialAgent(secretCode);
+            }
+        }
+
+        public void CheckIfToLogAboutPotentialThreadAlert(string secretCode)
+        {
+            if (this.Pda.GetNumOfMentionsBySecretCode(secretCode) >= 20 &&
+                this.Pda.ChaeckAndReturnTheType(secretCode) < 4)
+            {
+                Logger.CreateLog($"{secretCode} Is Potential Thread Alert.");
+            }
         }
     }
 }

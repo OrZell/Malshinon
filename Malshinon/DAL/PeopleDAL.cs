@@ -92,10 +92,10 @@ namespace Malshinon.DAL
                 this.SQL.OpenConnection();
                 MySqlConnection con = this.SQL.connection;
                 MySqlCommand cmd = new MySqlCommand("UPDATE people " +
-                    "SET type = @num " +
-                    "WHERE secret_code = @secretCode", con);
+                                                    "SET type = @num " +
+                                                    "WHERE secret_code = @secretCode", con);
                 cmd.Parameters.AddWithValue(@"num", 3);
-                cmd.Parameters.AddWithValue(@"secret_code", secretCode);
+                cmd.Parameters.AddWithValue(@"secretCode", secretCode);
                 cmd.ExecuteNonQuery();
             }
             catch (MySqlException ex)
@@ -115,10 +115,10 @@ namespace Malshinon.DAL
                 this.SQL.OpenConnection();
                 MySqlConnection con = this.SQL.connection;
                 MySqlCommand cmd = new MySqlCommand("UPDATE people " +
-                    "SET type = @num " +
-                    "WHERE secret_code = @secretCode", con);
+                                                    "SET type = @num " +
+                                                    "WHERE secret_code = @secretCode", con);
                 cmd.Parameters.AddWithValue(@"num", 4);
-                cmd.Parameters.AddWithValue(@"secret_code", secretCode);
+                cmd.Parameters.AddWithValue(@"secretCode", secretCode);
                 cmd.ExecuteNonQuery();
             }
             catch (MySqlException ex)
@@ -265,7 +265,7 @@ namespace Malshinon.DAL
         public int GetAllChartersBySecretCode(string secretCode)
         {
             MySqlDataReader reader = null!;
-            int? total = null;
+            int total = 0;
             try
             {
                 this.SQL.OpenConnection();
@@ -274,7 +274,7 @@ namespace Malshinon.DAL
                                                     "FROM intelreports " +
                                                     "INNER JOIN people " +
                                                     "ON intelreports.reporter_id = people.id " +
-                                                    "WHERE people.secret_code = @secertCode", con);
+                                                    "WHERE people.secret_code = @secretCode", con);
                 cmd.Parameters.AddWithValue(@"secretCode", secretCode);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -294,7 +294,7 @@ namespace Malshinon.DAL
                 }
                 this.SQL.CloseConnection();
             }
-            return (int)total;
+            return total;
         }
 
         public int GetNumOfReportsBySecretCode(string secretCode)

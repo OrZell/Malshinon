@@ -2,9 +2,20 @@
 {
     public class UserInputs
     {
-        public static string EnterSecretCode()
+        public static string EnterYourSecretCode()
         {
             Console.WriteLine("Please enter your Secret Code");
+            string userPrompt = Console.ReadLine()!;
+            if (userPrompt.Contains(" "))
+            {
+                throw new Exception("Invalid Code Name");
+            }
+            return userPrompt;
+        }
+
+        public static string EnterTargetSecretCode()
+        {
+            Console.WriteLine("Please enter target Secret Code");
             string userPrompt = Console.ReadLine()!;
             if (userPrompt.Contains(" "))
             {
@@ -40,6 +51,13 @@
             Console.WriteLine("Please Enter Your Report");
             string Text = Console.ReadLine();
             return Text;
+        }
+
+        public static string EnterPath()
+        {
+            Console.WriteLine("Please Enter Your Path");
+            string path = Console.ReadLine();
+            return path;
         }
     }
 }
