@@ -24,15 +24,20 @@ namespace Malshinon.Models
             {
                 Console.WriteLine("Please Choice:\n" +
                     "1. Enter Report\n" +
-                    "2. Exit");
+                    "2. Import CSV File\n" +
+                    "3. Exit");
                 string userInput = Console.ReadLine()!;
                 switch (userInput)
                 {
                     case "1":
-                        flow();
+                        EnterReport();
                         break;
 
                     case "2":
+                        ImportExternalCSV();
+                        break;
+
+                    case "3":
                         sign = false;
                         Console.WriteLine("Bye Bye");
                         break;
@@ -45,7 +50,7 @@ namespace Malshinon.Models
             while (sign);
         }
 
-        public void flow()
+        public void EnterReport()
         {
             string reporterSecretCode = UserInputs.EnterYourSecretCode();
             CheckIfSecretCodeExist(reporterSecretCode);
@@ -67,6 +72,44 @@ namespace Malshinon.Models
 
 
             Console.WriteLine("Proccessed");
+        }
+
+        public void ImportExternalCSV()
+        {
+            string path = UserInputs.EnterPath();
+
+            List<string[]> Data = ImportCSV.ProcessTheCSVToLists(path);
+            if (!ImportCSV.ValidateTheData(Data))
+            {
+                throw new Exception("Invalid Data");
+            }
+
+            Data = ImportCSV.CorrectTheData(Data);
+
+            foreach (string[] line in Data)
+            {
+                CheckIfSecretCodeExistForCSVFile(line[0], line[1], line[2]);
+                CheckIfSecretCodeExistForCSVFile(line[3], line[4], line[5]);
+
+                AddReportAndIncrease(line[0], line[3], line[6]);
+
+                CheckIfToChangeTheStatusToBoth(line[0]);
+                CheckIfToChangeTheStatusToBoth(line[3]);
+
+                CheckIfToChangeTheStatusToPotentialAgent(line[0]);
+                CheckIfToLogAboutPotentialThreadAlert(line[3]);
+
+            }
+        }
+
+        public void CheckIfSecretCodeExistForCSVFile(string secretCode, string firstName, string lastName)
+        {
+            if (!this.Pda.SearchByCodeName(secretCode))
+            {
+                Person person = new Person(firstName, lastName, secretCode);
+                this.Pda.AddPerson(person);
+                Logger.CreateLog($"New Person Created {secretCode}");
+            }
         }
 
         public void CheckIfSecretCodeExist(string secretCode, int type = 1, bool sign = true)
