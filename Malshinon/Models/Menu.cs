@@ -84,7 +84,12 @@ namespace Malshinon.Models
                 throw new Exception("Invalid Data");
             }
 
+
+
             Data = ImportCSV.CorrectTheData(Data);
+
+
+
 
             foreach (string[] line in Data)
             {
@@ -106,6 +111,11 @@ namespace Malshinon.Models
         {
             if (!this.Pda.SearchByCodeName(secretCode))
             {
+                if (firstName == "" || lastName == "")
+                {
+                    throw new Exception("Data Not Complete");
+                }
+
                 Person person = new Person(firstName, lastName, secretCode);
                 this.Pda.AddPerson(person);
                 Logger.CreateLog($"New Person Created {secretCode}");
