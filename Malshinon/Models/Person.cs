@@ -83,5 +83,12 @@
             this._NumReports = numReports;
             this._NumMentions = numMentions;
         }
+
+        public string Print()
+        {
+            string Name = this._FirstName + " " + this._LastName;
+            string result = $"Name: {Name}   Secret Code: {_SecretCode}   Type: {_Type}   Reports: {_NumReports}   Mentions: {_NumMentions}";
+            return result;
+        }
     }
 }

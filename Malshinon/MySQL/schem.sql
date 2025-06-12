@@ -20,3 +20,11 @@ CREATE TABLE IntelReports
     text TEXT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP()
 );
+
+CREATE TABLE Alerts
+(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    target_id INT NOT NULL,
+    time_window VARCHAR (30),
+    reason VARCHAR (50)
+);

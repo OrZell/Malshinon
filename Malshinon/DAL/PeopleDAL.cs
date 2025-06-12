@@ -1,5 +1,6 @@
 ﻿using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.IO.Pipelines;
 using Malshinon.Models;
 using Malshinon.MySQL;
 using MySql.Data.MySqlClient;
@@ -386,6 +387,115 @@ namespace Malshinon.DAL
             {
                 this.SQL.CloseConnection();
             }
+        }
+
+        public int CheckMentionsInTime(string secretCode, DateTime pastTime, DateTime currentTime)
+        {
+            int targetId = FindIdBySecretCode(secretCode);
+            MySqlDataReader reader = null;
+            int counter = 0;
+            try
+            {
+                this.SQL.OpenConnection();
+                MySqlConnection con = this.SQL.connection;
+                MySqlCommand cmd = new MySqlCommand("SELECT id " +
+                                                    "FROM intelreports " +
+                                                    "INNER JOIN people " +
+                                                    "ON intelreports.target_id = people.id " +
+                                                    "WHERE people.id = @targetId " +
+                                                    "AND intelreports.timestamp > @pastTime " +
+                                                    "AND @currentTime > intelreports.timestamp", con);
+                cmd.Parameters.AddWithValue(@"targetId", targetId);
+                cmd.Parameters.AddWithValue(@"pastTime", pastTime);
+                cmd.Parameters.AddWithValue(@"currentTime", currentTime);
+                reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    counter++;
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (reader != null && !reader.IsClosed)
+                {
+                    reader.Close();
+                }
+                this.SQL.CloseConnection();
+            }
+            return counter;
+        }
+
+        public List<Person> AllPotentialAgents()
+        {
+            List<Person> Agents = new List<Person>();
+            MySqlDataReader reader = null;
+            try
+            {
+                this.SQL.OpenConnection();
+                MySqlConnection con = this.SQL.connection;
+                MySqlCommand cmd = new MySqlCommand("SELECT * " +
+                                                    "FROM people " +
+                                                    "WHERE type = @potentialAgent", con);
+                cmd.Parameters.AddWithValue(@"potentialAgent", 4);
+                reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Agents.Add(BuilderFromReader.BuilderPerson(reader));
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (reader != null && !reader.IsClosed)
+                {
+                    reader.Close();
+                }
+                this.SQL.CloseConnection();
+            }
+            return Agents;
+        }
+
+        public List<Person> AllPotentialDangerous()
+        {
+            List<Person> Dangerous = new List<Person>();
+            MySqlDataReader reader = null;
+            try
+            {
+                this.SQL.OpenConnection();
+                MySqlConnection con = this.SQL.connection;
+                MySqlCommand cmd = new MySqlCommand("SELECT * " +
+                                                    "FROM people " +
+                                                    "WHERE dangerous = @dangerous", con);
+                cmd.Parameters.AddWithValue(@"dangerous", true);
+                reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Dangerous.Add(BuilderFromReader.BuilderPerson(reader));
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (reader != null && !reader.IsClosed)
+                {
+                    reader.Close();
+                }
+                this.SQL.CloseConnection();
+            }
+            return Dangerous;
         }
     }
 }
