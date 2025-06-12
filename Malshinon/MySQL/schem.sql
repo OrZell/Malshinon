@@ -8,7 +8,8 @@ CREATE TABLE People
     secret_code VARCHAR (40) UNIQUE,
     type ENUM('reporter', 'target', 'both', 'potential_agent'),
     num_reports INT DEFAULT 0,
-    num_mentions INT DEFAULT 0
+    num_mentions INT DEFAULT 0,
+    dangerous BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IntelReports

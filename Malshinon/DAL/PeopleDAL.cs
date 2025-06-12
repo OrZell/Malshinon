@@ -364,5 +364,28 @@ namespace Malshinon.DAL
             }
             return (int)num;
         }
+
+        public void UpdateToDangerous(string secretCode)
+        {
+            try
+            {
+                this.SQL.OpenConnection();
+                MySqlConnection con = this.SQL.connection;
+                MySqlCommand cmd = new MySqlCommand("UPDATE people " +
+                                                    "SET dangerous = @true " +
+                                                    "WHERE secret_code = @secretCode", con);
+                cmd.Parameters.AddWithValue(@"true", true);
+                cmd.Parameters.AddWithValue(@"secretCode", secretCode);
+                cmd.ExecuteNonQuery();
+            }
+            catch (MySqlException ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                this.SQL.CloseConnection();
+            }
+        }
     }
 }

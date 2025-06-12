@@ -176,7 +176,7 @@ namespace Malshinon.Models
             if (this.Pda.GetNumOfMentionsBySecretCode(secretCode) >= 20 &&
                 this.Pda.ChaeckAndReturnTheType(secretCode) < 4)
             {
-                Logger.CreateLog($"{secretCode} Is Potential Thread Alert.");
+                this.Pda.UpdateToDangerous(secretCode);
             }
         }
     }
